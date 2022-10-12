@@ -8,12 +8,14 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.backendprojectbaru.model.Student;
 import com.example.backendprojectbaru.repository.StudentRepository;
 import com.example.backendprojectbaru.service.StudentService;
 
-public class StudentControllerUnitTesting {
+@SpringBootTest
+public class StudentControllerUnitTest {
 
     @Test
     void shouldGetAll() {
