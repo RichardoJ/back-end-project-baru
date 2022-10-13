@@ -1,10 +1,11 @@
 package com.example.backendprojectbaru;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,6 +38,37 @@ public class StudentControllerUnitTest {
 
         // Assert
         assertArrayEquals(arr, studentService.listAllStudent().toArray());
+        
     }
+
+     @Test
+     void shouldGetOne(){
+         // Mock Student
+         Student studentOne = new Student(1, null, "michael", "bla@gmail.com", "1234", "pastoorstraat", 1);
+
+         //Mock Service
+         StudentRepository studentRepository = Mockito.mock(StudentRepository.class);
+         when(studentRepository.findById(1)).thenReturn(Optional.of(studentOne));
+
+         StudentService studentService = new StudentService(studentRepository);
+         assertEquals(studentOne, studentService.getStudent(1));
+     }
+
+     @Test
+    void shouldNotGetOne(){
+        //Mock Student
+         // Mock Student
+         Student studentOne = new Student(1, null, "michael", "bla@gmail.com", "1234", "pastoorstraat", 1);
+
+         //Mock Service
+         StudentRepository studentRepository = Mockito.mock(StudentRepository.class);
+         when(studentRepository.findById(1)).thenReturn(null);
+
+         StudentService studentService = new StudentService(studentRepository);
+         assertNotEquals(studentOne, null);
+     }
+
+//     @Test
+//    void
 
 }

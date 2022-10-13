@@ -2,10 +2,12 @@ package com.example.backendprojectbaru.Controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,15 +19,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backendprojectbaru.model.Student;
+import com.example.backendprojectbaru.model.StudentNotFoundException;
 import com.example.backendprojectbaru.service.StudentService;
 
 @RestController
 @RequestMapping("/student")
 public class StudentController {
-    
-    private StudentService student_service;
 
-    public StudentController(StudentService studentService){
+    private final StudentService student_service;
+
+    public StudentController(StudentService studentService) {
         this.student_service = studentService;
     }
 
@@ -34,9 +37,9 @@ public class StudentController {
         return student_service.listAllStudent();
     }
 
-    @PostMapping(value = "/", consumes = { MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE,
-                    MediaType.APPLICATION_XML_VALUE })
+    @PostMapping(value = "/", consumes = {MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE})
     public ResponseEntity<Student> add(@RequestBody Student user) {
         Student persistedStudent = student_service.saveStudent(user);
         return ResponseEntity.created(URI.create(String.format("/student/%s", persistedStudent.getStudent_name())))
@@ -46,13 +49,21 @@ public class StudentController {
     @GetMapping("/{id}")
     EntityModel<Student> one(@PathVariable Integer id) {
         Student student = student_service.getStudent(id);
-        return EntityModel.of(student, linkTo(methodOn(StudentController.class).one(id)).withSelfRel(), linkTo(methodOn(StudentController.class).all()).withRel("student")); 
+        if (student == null) {
+            throw new StudentNotFoundException(id);
+        }
+        return EntityModel.of(student, linkTo(methodOn(StudentController.class).one(id)).withSelfRel(), linkTo(methodOn(StudentController.class).all()).withRel("student"));
     }
 
-    
+    // @GetMapping("/{id}")
+    // ResponseEntity<?> getGroup(@PathVariable Integer id) {
+    //     Optional<Student> student = student_service.getStudent(id);
+    //     return student.map(response -> ResponseEntity.ok().body(response))
+    //             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    // }
 
     @DeleteMapping("/{id}")
     void deleteEmployee(@PathVariable Integer id) {
-       student_service.deleteStudent(id);
+        student_service.deleteStudent(id);
     }
 }
