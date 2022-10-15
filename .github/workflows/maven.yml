@@ -26,9 +26,7 @@ jobs:
       run: sudo chmod -R 777 ./   
     - name: Install Maven Dependancies
       run: ./mvnw dependency:go-offline
-    - name: Install Maven Wrapper
-      run: mvn -N io.takari:maven:0.7.7:wrapper
     - name: Build Docker Image
-      run: docker build - < dockerfile
+      run: docker compose build
     - name: Push Docker Image
       run: docker push richardoj/back-end_personal_project:latest
