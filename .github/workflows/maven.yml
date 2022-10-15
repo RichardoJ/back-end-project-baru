@@ -25,7 +25,7 @@ jobs:
     - name: change permission for mvnw
       run: sudo chmod -R 777 ./   
     - name: Install Maven Dependancies
-      run: ./mvnw package
+      run: ./mvnw dependency:resolve
     - name: Build Docker Image
       run: docker build - < dockerfile
     - name: Push Docker Image
