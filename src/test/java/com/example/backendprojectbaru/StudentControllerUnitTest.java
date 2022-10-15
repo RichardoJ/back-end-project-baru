@@ -8,15 +8,23 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
+import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.backendprojectbaru.model.Student;
 import com.example.backendprojectbaru.repository.StudentRepository;
 import com.example.backendprojectbaru.service.StudentService;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class StudentControllerUnitTest {
+
+    @Mock
+    private StudentRepository studentRepository;
+    
+    @InjectMocks
+    private StudentService studentService;
 
     @Test
     void shouldGetAll() {
@@ -30,11 +38,7 @@ public class StudentControllerUnitTest {
         Object[] arr = listStudent.toArray();
 
         // Mock the Service
-        StudentRepository studentRepository = Mockito.mock(StudentRepository.class);
         when(studentRepository.findAll()).thenReturn(listStudent);
-        StudentService studentService = new StudentService(studentRepository);
-        // when(studentService.listAllStudent()).thenReturn(listStudent);
-        // StudentController studentController = new StudentController(studentService);
 
         // Assert
         assertArrayEquals(arr, studentService.listAllStudent().toArray());
@@ -47,28 +51,38 @@ public class StudentControllerUnitTest {
          Student studentOne = new Student(1, null, "michael", "bla@gmail.com", "1234", "pastoorstraat", 1);
 
          //Mock Service
-         StudentRepository studentRepository = Mockito.mock(StudentRepository.class);
          when(studentRepository.findById(1)).thenReturn(Optional.of(studentOne));
 
-         StudentService studentService = new StudentService(studentRepository);
+         // Assert
          assertEquals(studentOne, studentService.getStudent(1));
      }
 
-     @Test
+    @Test
     void shouldNotGetOne(){
-        //Mock Student
-         // Mock Student
-         Student studentOne = new Student(1, null, "michael", "bla@gmail.com", "1234", "pastoorstraat", 1);
-
          //Mock Service
-         StudentRepository studentRepository = Mockito.mock(StudentRepository.class);
-         when(studentRepository.findById(1)).thenReturn(null);
+         when(studentRepository.findById(1)).thenReturn(Optional.empty());
 
-         StudentService studentService = new StudentService(studentRepository);
-         assertNotEquals(studentOne, null);
-     }
+         //Assert
+         assertEquals(null, studentService.getStudent(1));
+    }
 
-//     @Test
-//    void
+    @Test
+    void shouldSave(){
+        Student studentOne = new Student(1, null, "michael", "bla@gmail.com", "1234", "pastoorstraat", 1);
+
+        when(studentRepository.save(studentOne)).thenReturn(studentOne);
+
+        assertEquals(studentOne, studentService.saveStudent(studentOne));
+    }
+
+    @Test
+    void shouldDelete(){
+        studentService.deleteStudent(1);
+        assertEquals(null, studentService.getStudent(1));
+    }
+
+
+
+
 
 }

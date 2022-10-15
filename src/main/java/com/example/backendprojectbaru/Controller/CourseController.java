@@ -5,7 +5,6 @@ import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backendprojectbaru.model.Course;
 import com.example.backendprojectbaru.model.Modules;
+import com.example.backendprojectbaru.model.NotFoundException;
 import com.example.backendprojectbaru.service.CourseService;
 
 
 @RestController
 @RequestMapping("/course")
 public class CourseController {
-    @Autowired
-    CourseService course_service;
+    private final CourseService course_service;
+
+    public CourseController(CourseService courseService){
+        this.course_service = courseService;
+    }
 
     @GetMapping("")
     public List<Course> all() {
@@ -36,6 +39,9 @@ public class CourseController {
     @GetMapping("/{id}")
     EntityModel<Course> one(@PathVariable Integer id) {
         Course course = course_service.getCourse(id);
+        if(course == null){
+            throw new NotFoundException(id);
+        }
 
         return EntityModel.of(course, linkTo(methodOn(CourseController.class).one(id)).withSelfRel(),
                 linkTo(methodOn(CourseController.class).all()).withRel("course"));
@@ -52,7 +58,12 @@ public class CourseController {
 
     @GetMapping("/{id}/modules")
     public List<Modules> all_modules(@PathVariable Integer id) {
-        return course_service.getCourseModules(id);
+        List<Modules> modules = course_service.getCourseModules(id);
+        if(modules == null){
+            throw new NotFoundException(id);
+        }else{
+            return modules;
+        }
     }
 
     @DeleteMapping("/{id}")

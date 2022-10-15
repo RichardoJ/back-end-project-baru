@@ -48,6 +48,6 @@ public class Modules implements Serializable{
     private String modules_name;
     private String modules_score;
     private String modules_progress;
-
+    private String details;
     
 }

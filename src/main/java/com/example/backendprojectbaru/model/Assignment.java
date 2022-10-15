@@ -34,4 +34,5 @@ public class Assignment implements Serializable{
     private String assignment_name;
     private int assignment_status;
     private Float assignment_score;
+    private String details;
 }

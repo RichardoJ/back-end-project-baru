@@ -10,14 +10,17 @@ import org.springframework.stereotype.Service;
 
 import com.example.backendprojectbaru.model.Course;
 import com.example.backendprojectbaru.model.Modules;
-import com.example.backendprojectbaru.model.StudentNotFoundException;
+import com.example.backendprojectbaru.model.NotFoundException;
 import com.example.backendprojectbaru.repository.CourseRepository;
 
 @Service
 @Transactional
 public class CourseService {
-    @Autowired
-    CourseRepository courserepo;
+    private final CourseRepository courserepo;
+
+    public CourseService(CourseRepository courseRepository){
+        this.courserepo = courseRepository;
+    }
 
     public List<Course> listAllCourse(){
         return courserepo.findAll();
@@ -28,15 +31,12 @@ public class CourseService {
     }
 
     public Course getCourse(Integer id) {
-        // Optional<Course> course = courserepo.findById(id);
-        // if(course.isPresent()){
-        //     Course final_course = course.get();
-        //     return final_course;
-        // }else{
-        //     Course empty = new Course();
-        //     return empty;
-        // }
-        return courserepo.findById(id).orElseThrow(() -> new StudentNotFoundException(id));
+        Optional<Course> course = courserepo.findById(id);
+        if(course.isPresent()){
+            return course.get();
+        }else{
+            return null;
+        }
     }
 
     public List<Modules> getCourseModules(Integer id) {
@@ -45,8 +45,7 @@ public class CourseService {
             Course final_course = course.get();
             return final_course.getModules();
         }else{
-            Course empty = new Course();
-            return empty.getModules();
+            return null;
         }
     }
 

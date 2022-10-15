@@ -11,15 +11,17 @@ import org.springframework.stereotype.Service;
 
 import com.example.backendprojectbaru.model.Assignment;
 import com.example.backendprojectbaru.model.Modules;
-import com.example.backendprojectbaru.model.StudentNotFoundException;
 import com.example.backendprojectbaru.repository.AssignmentRepository;
 import com.example.backendprojectbaru.repository.ModulesRepository;
 
 @Service
 @Transactional
 public class ModuleService {
-    @Autowired
-    ModulesRepository modulesrepo;
+    private final ModulesRepository modulesrepo;
+
+    public ModuleService(ModulesRepository modulesRepository){
+        this.modulesrepo = modulesRepository;
+    }
 
     @Autowired
     AssignmentRepository assignmentrepo;
@@ -33,7 +35,12 @@ public class ModuleService {
     }
 
     public Modules getModule(Integer id) {
-        return modulesrepo.findById(id).orElseThrow(() -> new StudentNotFoundException(id));
+        Optional<Modules> tmp = modulesrepo.findById(id);
+        if(tmp.isPresent()){
+            return tmp.get();
+        }else{
+            return null;
+        }
     }
 
     public void deleteModule(Integer id){
@@ -47,10 +54,8 @@ public class ModuleService {
             return assignmentrepo.save(assignment);
         }
         else{
-            Assignment empty = new Assignment();
-            return empty;
+            return null;
         }
-        
     }
 
     public List<Assignment> getModuleAssignment(Integer id){
@@ -60,8 +65,7 @@ public class ModuleService {
             return final_module.getAssignments();
         }
         else{
-            List<Assignment> empty = new ArrayList();
-            return empty;
+            return null;
         }
     }
 
@@ -78,12 +82,16 @@ public class ModuleService {
 
     public List<Assignment> getAllAssignmentsByCourse(Integer id){
         List<Modules> modules = modulesrepo.findModulesByCourseId(id);
-        List<Assignment> allAssignment = new ArrayList<>();
-        List<Assignment> assignmentsPerCourse;
-        for (Modules modules2 : modules) {
-            assignmentsPerCourse = modules2.getAssignments();
-            allAssignment.addAll(assignmentsPerCourse);
+        if (modules.isEmpty()){
+            return null;
+        }else{
+            List<Assignment> allAssignment = new ArrayList<>();
+            List<Assignment> assignmentsPerCourse;
+            for (Modules modules2 : modules) {
+                assignmentsPerCourse = modules2.getAssignments();
+                allAssignment.addAll(assignmentsPerCourse);
+            }
+            return allAssignment;
         }
-        return allAssignment;
     }
 }

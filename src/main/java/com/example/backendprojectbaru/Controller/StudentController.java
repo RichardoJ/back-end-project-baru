@@ -2,12 +2,10 @@ package com.example.backendprojectbaru.Controller;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backendprojectbaru.model.Student;
-import com.example.backendprojectbaru.model.StudentNotFoundException;
+import com.example.backendprojectbaru.model.NotFoundException;
 import com.example.backendprojectbaru.service.StudentService;
 
 @RestController
@@ -50,7 +48,7 @@ public class StudentController {
     EntityModel<Student> one(@PathVariable Integer id) {
         Student student = student_service.getStudent(id);
         if (student == null) {
-            throw new StudentNotFoundException(id);
+            throw new NotFoundException(id);
         }
         return EntityModel.of(student, linkTo(methodOn(StudentController.class).one(id)).withSelfRel(), linkTo(methodOn(StudentController.class).all()).withRel("student"));
     }

@@ -1,12 +1,10 @@
 package com.example.backendprojectbaru.Controller;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backendprojectbaru.model.Course;
 import com.example.backendprojectbaru.model.Enrollment;
-import com.example.backendprojectbaru.model.StudentNotFoundException;
-import com.example.backendprojectbaru.repository.EnrollmentRepository;
+import com.example.backendprojectbaru.model.NotFoundException;
 import com.example.backendprojectbaru.service.EnrollmentService;
 
 @RestController
 @RequestMapping("/enrollment")
 public class EnrollmentController {
-    @Autowired
-    EnrollmentService enrollment_service;
+    private final EnrollmentService enrollment_service;
+
+    public EnrollmentController(EnrollmentService enrollmentService){
+        this.enrollment_service = enrollmentService;
+    }
 
     @GetMapping("")
     public List<Enrollment> all() {
@@ -47,11 +47,13 @@ public class EnrollmentController {
     @GetMapping("/{id}")
     EntityModel<Enrollment> one(@PathVariable Integer id) {
         Enrollment enrollment = enrollment_service.getEnrollment(id);
-        
+        if(enrollment == null){
+            throw new NotFoundException(id);
+        }
         return EntityModel.of(enrollment, linkTo(methodOn(EnrollmentController.class).one(id)).withSelfRel(), linkTo(methodOn(EnrollmentController.class).all()).withRel("enrollment")); 
     }
 
-    @GetMapping("/student_id/{id}/course")
+    @GetMapping("/{id}/student_course")
     public List<Course> findbystudent(@PathVariable Integer id) {
         return enrollment_service.getEnrollmentByStudentId(id);
     }

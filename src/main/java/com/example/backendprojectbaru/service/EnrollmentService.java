@@ -2,6 +2,7 @@ package com.example.backendprojectbaru.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -10,14 +11,17 @@ import org.springframework.stereotype.Service;
 
 import com.example.backendprojectbaru.model.Course;
 import com.example.backendprojectbaru.model.Enrollment;
-import com.example.backendprojectbaru.model.StudentNotFoundException;
+import com.example.backendprojectbaru.model.NotFoundException;
 import com.example.backendprojectbaru.repository.EnrollmentRepository;
 
 @Service
 @Transactional
 public class EnrollmentService {
-    @Autowired
-    EnrollmentRepository enrollmentrepo;
+    private final  EnrollmentRepository enrollmentrepo;
+
+    public  EnrollmentService(EnrollmentRepository enrollmentRepository){
+        this.enrollmentrepo = enrollmentRepository;
+    }
     
     public List<Enrollment> listAllEnrollment(){
         return enrollmentrepo.findAll();
@@ -28,7 +32,12 @@ public class EnrollmentService {
     }
 
     public Enrollment getEnrollment(Integer id) {
-        return enrollmentrepo.findById(id).orElseThrow(() -> new StudentNotFoundException(id));
+        Optional<Enrollment> tmp = enrollmentrepo.findById(id);
+        if(tmp.isEmpty()){
+            return null;
+        }else{
+            return tmp.get();
+        }
     }
 
     public List<Course> getEnrollmentByStudentId(Integer id){

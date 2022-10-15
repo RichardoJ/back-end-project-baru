@@ -9,15 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.backendprojectbaru.model.Assignment;
-import com.example.backendprojectbaru.model.StudentNotFoundException;
+import com.example.backendprojectbaru.model.NotFoundException;
 import com.example.backendprojectbaru.repository.AssignmentRepository;
 
 @Service
 @Transactional
 public class AssignmentService {
-    @Autowired
-    AssignmentRepository assignmentrepo;
+    private final AssignmentRepository assignmentrepo;
 
+    public AssignmentService(AssignmentRepository assignmentRepository){
+        this.assignmentrepo = assignmentRepository;
+    }
 
     public List<Assignment> listAllAssignment(){
         return assignmentrepo.findAll();
@@ -28,15 +30,12 @@ public class AssignmentService {
     }
 
     public Assignment getAssignment(Integer id) {
-        // Optional<Assignment> assignment = assignmentrepo.findById(id);
-        // if(assignment.isPresent()){
-        //     Assignment final_assignment = assignment.get();
-        //     return final_assignment;
-        // }else{
-        //     Assignment empty = new Assignment();
-        //     return empty;
-        // }
-        return assignmentrepo.findById(id).orElseThrow(() -> new StudentNotFoundException(id));
+        Optional<Assignment> assignment = assignmentrepo.findById(id);
+        if(assignment.isPresent()){
+            return assignment.get();
+        }else{
+            return null;
+        }
     }
 
     public void deleteAssignment(Integer id){
