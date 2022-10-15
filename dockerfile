@@ -4,8 +4,8 @@ FROM openjdk:16-jdk-alpine
 RUN mkdir -p /app
 WORKDIR /app
 
-COPY ../../.mvn/ .mvn
-COPY ../../mvnw ../../pom.xml ./
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
 
 RUN ./mvnw dependency:go-offline
  
