@@ -19,6 +19,7 @@ services:
     build: 
       context: .
       dockerfile: dockerfile
+      image: richardoj/back-end_personal_project:latest
     restart: always
     env_file: ./.env
     ports:
