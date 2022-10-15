@@ -23,6 +23,6 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build Docker Image
-      run:
-        - docker build --file dockerfile
-        - docker push richardoj/back-end_personal_project:latest
+      run: docker build --file dockerfile
+    - name: Push Docker Image
+      run: docker push richardoj/back-end_personal_project:latest
